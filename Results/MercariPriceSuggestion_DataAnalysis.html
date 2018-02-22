@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Untitled</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Untitled2</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -11777,7 +11777,17 @@ div#notebook {
 <div class="inner_cell">
     <div class="input_area">
 <div class=" highlight hl-ipython3"><pre><span></span><span class="o">%</span><span class="k">matplotlib</span> inline
-<span class="kn">import</span> <span class="nn">MPS_Graphs</span>
+<span class="kn">import</span> <span class="nn">matplotlib.pyplot</span> <span class="k">as</span> <span class="nn">plt</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">re</span>
+<span class="kn">import</span> <span class="nn">string</span>
+<span class="kn">import</span> <span class="nn">nltk</span>
+<span class="kn">from</span> <span class="nn">nltk.corpus</span> <span class="k">import</span> <span class="n">stopwords</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction</span> <span class="k">import</span> <span class="n">stop_words</span>
+<span class="kn">import</span> <span class="nn">plotly.offline</span> <span class="k">as</span> <span class="nn">py</span>
+<span class="n">py</span><span class="o">.</span><span class="n">init_notebook_mode</span><span class="p">(</span><span class="n">connected</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="kn">import</span> <span class="nn">plotly.graph_objs</span> <span class="k">as</span> <span class="nn">go</span>
 </pre></div>
 
 </div>
@@ -11799,6 +11809,88 @@ div#notebook {
 </div>
 
 </div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">split_cat</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span> <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;No Label&quot;</span><span class="p">,</span> <span class="s2">&quot;No Label&quot;</span><span class="p">,</span> <span class="s2">&quot;No Label&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">wordCount</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+        <span class="c1"># convert to lower case and strip regex\n&quot;,</span>
+        <span class="k">try</span><span class="p">:</span>
+             <span class="c1"># convert to lower case and strip regex\n&quot;,</span>
+            <span class="n">text</span> <span class="o">=</span> <span class="n">text</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span>
+            <span class="n">regex</span> <span class="o">=</span> <span class="n">re</span><span class="o">.</span><span class="n">compile</span><span class="p">(</span><span class="s1">&#39;[&#39;</span> <span class="o">+</span><span class="n">re</span><span class="o">.</span><span class="n">escape</span><span class="p">(</span><span class="n">string</span><span class="o">.</span><span class="n">punctuation</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;0-9</span><span class="se">\\\\</span><span class="s1">r</span><span class="se">\\\\</span><span class="s1">t</span><span class="se">\\\\</span><span class="s1">n]&#39;</span><span class="p">)</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="n">regex</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">,</span> <span class="n">text</span><span class="p">)</span>
+            <span class="c1"># tokenize\n&quot;,</span>
+            <span class="c1"># words = nltk.word_tokenize(clean_txt)\n&quot;,</span>
+            <span class="c1"># remove words in stop words\n&quot;,</span>
+            <span class="n">words</span> <span class="o">=</span> <span class="p">[</span><span class="n">w</span> <span class="k">for</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">txt</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot; &quot;</span><span class="p">)</span>
+                     <span class="k">if</span> <span class="ow">not</span> <span class="n">w</span> <span class="ow">in</span> <span class="n">stop_words</span><span class="o">.</span><span class="n">ENGLISH_STOP_WORDS</span> <span class="ow">and</span> <span class="nb">len</span><span class="p">(</span><span class="n">w</span><span class="p">)</span><span class="o">&gt;</span><span class="mi">3</span><span class="p">]</span>
+            <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="n">words</span><span class="p">)</span>
+        <span class="k">except</span><span class="p">:</span>
+            <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="s2">&quot;PATH = </span><span class="se">\&quot;</span><span class="s2">../input/</span><span class="se">\&quot;</span><span class="s2">&quot;</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./inputCopy/train.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_csv</span><span class="p">(</span><span class="s1">&#39;./inputCopy/test.tsv&#39;</span><span class="p">,</span> <span class="n">sep</span><span class="o">=</span><span class="s1">&#39;</span><span class="se">\t</span><span class="s1">&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************** Training data ***************&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> (Rows, column)&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************** Test data ***************&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">test</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************** Train data(data types) ***************&#39;</span><span class="p">)</span>
+<span class="nb">print</span> <span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">dtypes</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area">
 
@@ -11824,7 +11916,53 @@ price                float64
 shipping               int64
 item_description      object
 dtype: object
+</pre>
+</div>
+</div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Price(Target Variable) ***********&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">price</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> The median price of all the items in the training is about $267 but given the existence of some extreme values of over $100 and the maximum at $2,009, the distribution of the variables is heavily skewed to the left. So let</span><span class="se">\&#39;</span><span class="s1">s make log-transformation on the price (we added +1 to the value before the transformation to avoid zero and negative values&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">])</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">,</span><span class="nb">range</span><span class="o">=</span><span class="p">[</span><span class="mi">0</span><span class="p">,</span><span class="mi">250</span><span class="p">])</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;price&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Price Distribution - Training Set&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+
+<span class="n">plt</span><span class="o">.</span><span class="n">subplot</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">plot</span><span class="o">.</span><span class="n">hist</span><span class="p">(</span><span class="n">bins</span><span class="o">=</span><span class="mi">50</span><span class="p">,</span> <span class="n">figsize</span><span class="o">=</span><span class="p">(</span><span class="mi">20</span><span class="p">,</span><span class="mi">10</span><span class="p">),</span> <span class="n">edgecolor</span><span class="o">=</span><span class="s1">&#39;white&#39;</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">xlabel</span><span class="p">(</span><span class="s1">&#39;log(price+1)&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">ylabel</span><span class="p">(</span><span class="s1">&#39;frequency&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">tick_params</span><span class="p">(</span><span class="n">labelsize</span><span class="o">=</span><span class="mi">15</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">title</span><span class="p">(</span><span class="s1">&#39;Log(Price) Distribution - Training Set&#39;</span><span class="p">,</span> <span class="n">fontsize</span><span class="o">=</span><span class="mi">17</span><span class="p">)</span>
+<span class="n">plt</span><span class="o">.</span><span class="n">show</span><span class="p">()</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  ************* Price(Target Variable) ***********
 count    1.482535e+06
 mean     2.673752e+01
@@ -11856,6 +11994,28 @@ Name: price, dtype: float64
 
 </div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Shipping ***********&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">shipping</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1">Shipping cost burden is decently split, 55% by sellers and 44% by buyers&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
 <div class="output_area">
 
 <div class="prompt"></div>
@@ -11869,17 +12029,101 @@ Name: price, dtype: float64
 Name: shipping, dtype: float64
 
 Shipping cost burden is decently split, 55% by sellers and 44% by buyers
+</pre>
+</div>
+</div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Category Name ***********&#39;</span><span class="p">)</span>
+<span class="c1">#print (train.category_name.value_counts()[:5])</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">category_name</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  ************* Category Name ***********
 count                                            1476208
 unique                                              1287
 top       Women/Athletic Apparel/Pants, Tights, Leggings
 freq                                               60177
 Name: category_name, dtype: object
+</pre>
+</div>
+</div>
 
- ************* Category Name(Empty values) ***********
-There are 6327 items that do not have a label.
-There are 11 unique categories.
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">],</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">],</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;category_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_cat</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique categories.&quot;</span> <span class="o">%</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique first sub-categories.&quot;</span> <span class="o">%</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique second sub-categories.&quot;</span> <span class="o">%</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">values</span>
+<span class="n">pct</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;%&quot;</span><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">))]</span>
+<span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">pct</span><span class="p">)</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span> <span class="s1">&#39;Number of Items by Main Category&#39;</span><span class="p">,</span>
+              <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Count&#39;</span><span class="p">),</span>
+              <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Category&#39;</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace1</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+<span class="n">py</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+<span class="n">x</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)[:</span><span class="mi">15</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="mi">15</span><span class="p">]</span>
+<span class="n">pct</span> <span class="o">=</span> <span class="p">[(</span><span class="s2">&quot;</span><span class="si">%.2f</span><span class="s2">&quot;</span><span class="o">%</span><span class="p">(</span><span class="n">v</span><span class="o">*</span><span class="mi">100</span><span class="p">))</span><span class="o">+</span><span class="s2">&quot;%&quot;</span><span class="k">for</span> <span class="n">v</span> <span class="ow">in</span> <span class="p">(</span><span class="n">y</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">train</span><span class="p">))][:</span><span class="mi">15</span><span class="p">]</span>
+<span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">text</span><span class="o">=</span><span class="n">pct</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span><span class="n">colorscale</span><span class="o">=</span><span class="s1">&#39;Portland&#39;</span><span class="p">,</span><span class="n">showscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">reversescale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">))</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span> <span class="s1">&#39;Number of Items by Sub Category (Top 15)&#39;</span><span class="p">,</span>
+              <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Count&#39;</span><span class="p">),</span>
+              <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;SubCategory&#39;</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace1</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+<span class="n">py</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>There are 11 unique categories.
 There are 114 unique first sub-categories.
 There are 871 unique second sub-categories.
 </pre>
@@ -11893,7 +12137,7 @@ There are 871 unique second sub-categories.
 
 
 <div class="output_html rendered_html output_subarea ">
-<div id="1f84d427-703d-49a3-9140-8b4de42bfff2" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("1f84d427-703d-49a3-9140-8b4de42bfff2", [{"text": ["44.81%", "14.02%", "11.58%", "8.28%", "6.32%", "4.58%", "3.14%", "3.06%", "2.08%", "1.71%", "0.43%"], "type": "bar", "x": ["Women", "Beauty", "Kids", "Electronics", "Men", "Home", "Vintage & Collectibles", "Other", "Handmade", "Sports & Outdoors", "No Label"], "y": [664385, 207828, 171689, 122690, 93680, 67871, 46530, 45351, 30842, 25342, 6327]}], {"yaxis": {"title": "Count"}, "xaxis": {"title": "Category"}, "title": "Number of Items by Main Category"}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
+<div id="17376871-9ca4-4253-acce-11d759db72fb" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("17376871-9ca4-4253-acce-11d759db72fb", [{"y": [664385, 207828, 171689, 122690, 93680, 67871, 46530, 45351, 30842, 25342, 6327], "text": ["44.81%", "14.02%", "11.58%", "8.28%", "6.32%", "4.58%", "3.14%", "3.06%", "2.08%", "1.71%", "0.43%"], "type": "bar", "x": ["Women", "Beauty", "Kids", "Electronics", "Men", "Home", "Vintage & Collectibles", "Other", "Handmade", "Sports & Outdoors", "No Label"]}], {"title": "Number of Items by Main Category", "xaxis": {"title": "Category"}, "yaxis": {"title": "Count"}}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
 </div>
 
 </div>
@@ -11905,10 +12149,75 @@ There are 871 unique second sub-categories.
 
 
 <div class="output_html rendered_html output_subarea ">
-<div id="ca83755d-9909-43f6-bd5a-13234645872b" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("ca83755d-9909-43f6-bd5a-13234645872b", [{"text": ["9.06%", "8.41%", "7.21%", "6.78%", "4.17%", "3.92%", "3.59%", "3.09%", "3.09%", "2.86%", "2.44%", "2.43%", "2.41%", "2.28%", "2.01%"], "marker": {"colorscale": "Portland", "color": [134383, 124624, 106960, 100452, 61763, 58158, 53290, 45862, 45758, 42350, 36130, 35971, 35752, 33784, 29838], "reversescale": false, "showscale": true}, "type": "bar", "x": ["Athletic Apparel", "Makeup", "Tops & Blouses", "Shoes", "Jewelry", "Toys", "Cell Phones & Accessories", "Women's Handbags", "Dresses", "Women's Accessories", "Jeans", "Video Games & Consoles", "Sweaters", "Underwear", "Skin Care"], "y": [134383, 124624, 106960, 100452, 61763, 58158, 53290, 45862, 45758, 42350, 36130, 35971, 35752, 33784, 29838]}], {"yaxis": {"title": "Count"}, "xaxis": {"title": "SubCategory"}, "title": "Number of Items by Sub Category (Top 15)"}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
+<div id="f8035639-def9-4dc3-87da-0a68eb7087a2" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("f8035639-def9-4dc3-87da-0a68eb7087a2", [{"marker": {"reversescale": false, "color": [134383, 124624, 106960, 100452, 61763, 58158, 53290, 45862, 45758, 42350, 36130, 35971, 35752, 33784, 29838], "colorscale": "Portland", "showscale": true}, "y": [134383, 124624, 106960, 100452, 61763, 58158, 53290, 45862, 45758, 42350, 36130, 35971, 35752, 33784, 29838], "x": ["Athletic Apparel", "Makeup", "Tops & Blouses", "Shoes", "Jewelry", "Toys", "Cell Phones & Accessories", "Women's Handbags", "Dresses", "Women's Accessories", "Jeans", "Video Games & Consoles", "Sweaters", "Underwear", "Skin Care"], "type": "bar", "text": ["9.06%", "8.41%", "7.21%", "6.78%", "4.17%", "3.92%", "3.59%", "3.09%", "3.09%", "2.86%", "2.44%", "2.43%", "2.41%", "2.28%", "2.01%"]}], {"title": "Number of Items by Sub Category (Top 15)", "xaxis": {"title": "SubCategory"}, "yaxis": {"title": "Count"}}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
 </div>
 
 </div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Category Name(Empty values) ***********&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> items that do not have a label.&quot;</span> <span class="o">%</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;category_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">isnull</span><span class="p">()</span><span class="o">.</span><span class="n">sum</span><span class="p">())</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
+ ************* Category Name(Empty values) ***********
+There are 6327 items that do not have a label.
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Brand Name ***********&#39;</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">train</span><span class="o">.</span><span class="n">brand_name</span><span class="o">.</span><span class="n">describe</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique brand names in the training dataset.&quot;</span> <span class="o">%</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;brand_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="n">x</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;brand_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">index</span><span class="o">.</span><span class="n">values</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="s1">&#39;str&#39;</span><span class="p">)[:</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">y</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;brand_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">value_counts</span><span class="p">()</span><span class="o">.</span><span class="n">values</span><span class="p">[:</span><span class="mi">10</span><span class="p">]</span>
+<span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Bar</span><span class="p">(</span><span class="n">x</span><span class="o">=</span><span class="n">x</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="n">y</span><span class="p">,</span> <span class="n">marker</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">color</span> <span class="o">=</span> <span class="n">y</span><span class="p">,</span><span class="n">colorscale</span><span class="o">=</span><span class="s1">&#39;Portland&#39;</span><span class="p">,</span><span class="n">showscale</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+                         <span class="n">reversescale</span> <span class="o">=</span> <span class="kc">False</span><span class="p">))</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span> <span class="s1">&#39;Top 10 Brand by Number of Items&#39;</span><span class="p">,</span>
+           <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Brand Name&#39;</span><span class="p">),</span>
+           <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Count&#39;</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace1</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+<span class="n">py</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area">
 
@@ -11935,10 +12244,48 @@ There are 4809 unique brand names in the training dataset.
 
 
 <div class="output_html rendered_html output_subarea ">
-<div id="750540a8-688b-49c7-84a1-8b7e3681c1d6" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("750540a8-688b-49c7-84a1-8b7e3681c1d6", [{"marker": {"colorscale": "Portland", "color": [54088, 54043, 48036, 31024, 17322, 15186, 15007, 14558, 13928, 13254], "reversescale": false, "showscale": true}, "type": "bar", "x": ["PINK", "Nike", "Victoria's Secret", "LuLaRoe", "Apple", "FOREVER 21", "Nintendo", "Lululemon", "Michael Kors", "American Eagle"], "y": [54088, 54043, 48036, 31024, 17322, 15186, 15007, 14558, 13928, 13254]}], {"yaxis": {"title": "Brand Name"}, "xaxis": {"title": "Count"}, "title": "Top 10 Brand by Number of Items"}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
+<div id="fe0f21fd-3311-4fa5-b41b-fa5c8dbee8a4" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("fe0f21fd-3311-4fa5-b41b-fa5c8dbee8a4", [{"marker": {"reversescale": false, "color": [54088, 54043, 48036, 31024, 17322, 15186, 15007, 14558, 13928, 13254], "colorscale": "Portland", "showscale": true}, "y": [54088, 54043, 48036, 31024, 17322, 15186, 15007, 14558, 13928, 13254], "type": "bar", "x": ["PINK", "Nike", "Victoria's Secret", "LuLaRoe", "Apple", "FOREVER 21", "Nintendo", "Lululemon", "Michael Kors", "American Eagle"]}], {"title": "Top 10 Brand by Number of Items", "xaxis": {"title": "Count"}, "yaxis": {"title": "Brand Name"}}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
 </div>
 
 </div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> ************* Item Description ***********&#39;</span><span class="p">)</span>
+<span class="n">train</span><span class="p">[</span><span class="s1">&#39;desc_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="s1">&#39;item_description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">wordCount</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="n">test</span><span class="p">[</span><span class="s1">&#39;desc_len&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">test</span><span class="p">[</span><span class="s1">&#39;item_description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">wordCount</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+<span class="c1">#print(train.head())</span>
+<span class="n">df</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">groupby</span><span class="p">(</span><span class="s1">&#39;desc_len&#39;</span><span class="p">)[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">reset_index</span><span class="p">()</span>
+
+<span class="n">trace1</span> <span class="o">=</span> <span class="n">go</span><span class="o">.</span><span class="n">Scatter</span><span class="p">(</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;desc_len&#39;</span><span class="p">],</span>
+    <span class="n">y</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">]</span><span class="o">+</span><span class="mi">1</span><span class="p">),</span>
+    <span class="n">mode</span> <span class="o">=</span> <span class="s1">&#39;lines+markers&#39;</span><span class="p">,</span>
+    <span class="n">name</span> <span class="o">=</span> <span class="s1">&#39;lines+markers&#39;</span><span class="p">)</span>
+<span class="n">layout</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span> <span class="s1">&#39;Average Log(Price) by Description Length&#39;</span><span class="p">,</span>
+              <span class="n">yaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Average Log(Price)&#39;</span><span class="p">),</span>
+              <span class="n">xaxis</span> <span class="o">=</span> <span class="nb">dict</span><span class="p">(</span><span class="n">title</span><span class="o">=</span><span class="s1">&#39;Description Length&#39;</span><span class="p">))</span>
+<span class="n">fig</span><span class="o">=</span><span class="nb">dict</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="p">[</span><span class="n">trace1</span><span class="p">],</span> <span class="n">layout</span><span class="o">=</span><span class="n">layout</span><span class="p">)</span>
+<span class="n">py</span><span class="o">.</span><span class="n">iplot</span><span class="p">(</span><span class="n">fig</span><span class="p">)</span>
+
+<span class="c1"># remove missing values in item description</span>
+<span class="n">train</span> <span class="o">=</span> <span class="n">train</span><span class="p">[</span><span class="n">pd</span><span class="o">.</span><span class="n">notnull</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;item_description&#39;</span><span class="p">])]</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
 
 <div class="output_area">
 
@@ -11959,7 +12306,7 @@ There are 4809 unique brand names in the training dataset.
 
 
 <div class="output_html rendered_html output_subarea ">
-<div id="7ca39f9d-6965-47d9-a8d0-9e5bb96edf6b" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("7ca39f9d-6965-47d9-a8d0-9e5bb96edf6b", [{"mode": "lines+markers", "type": "scatter", "name": "lines+markers", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 85, 89, 95, 96, 97, 98, 99, 100, 101, 102], "y": [3.2640452560804443, 3.1986500089992607, 3.2464237758062513, 3.2633135261373676, 3.291343091266302, 3.3193952506108158, 3.3439316492132964, 3.3802161972006495, 3.3852725618387307, 3.417743421329492, 3.4321097308750423, 3.431385581877878, 3.4693666347597807, 3.4631478103767654, 3.465512038992406, 3.4900831162831554, 3.486206607959669, 3.496927070734422, 3.4753567761161164, 3.4977838091287077, 3.4804304610405, 3.4996661489403116, 3.494774683004721, 3.491431776513427, 3.412380026808228, 3.45502619549299, 3.405505498525316, 3.470016468389339, 3.4128978672610235, 3.3383590899150617, 3.4021663288087236, 3.3203693415412125, 3.347824110735063, 3.3107103179095456, 3.2898011887983647, 3.2348181962594453, 3.3482263215424553, 3.36671833721582, 3.2920738466249873, 3.329037151570281, 3.3027159997739175, 3.327292549627702, 3.2950928401213777, 3.269278154699114, 3.27146623022967, 3.319858552803384, 3.218001353139111, 3.342942671360679, 3.2344519081604552, 3.311386554053567, 3.2454361241134886, 3.266964158198452, 3.235776283685612, 3.158144450983343, 3.16125468431989, 3.041278722427568, 3.2406373166497136, 3.2465939531201093, 3.140603762716511, 3.1602809949116053, 3.1364818703304223, 2.948456258848584, 3.0953916369768177, 3.2571375353107266, 3.2897554088689014, 3.00691570581305, 3.2432255968892636, 3.0822058715578176, 3.1029491731724925, 3.154633556139847, 3.107474253446467, 3.5292398816299575, 3.120895416507997, 3.1763857732472487, 3.0117792991515087, 3.35394449681161, 3.0301337002713233, 2.6060510331470885, 3.381966019734268, 2.9041650800285006, 3.1918471524802814, 3.091042453358316, 2.5902671654458267, 2.70805020110221, 4.795790545596741, 2.3978952727983707, 2.797281334830153, 2.690350624002809, 2.803360380906535, 2.9444389791664403, 2.9779276489204842, 2.7814776696570274, 3.2733640101522705, 3.2865344733420154]}], {"yaxis": {"title": "Average Log(Price)"}, "xaxis": {"title": "Description Length"}, "title": "Average Log(Price) by Description Length"}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
+<div id="10242921-de1a-499d-b524-0faf43b784ae" style="height: 525px; width: 100%;" class="plotly-graph-div"></div><script type="text/javascript">require(["plotly"], function(Plotly) { window.PLOTLYENV=window.PLOTLYENV || {};window.PLOTLYENV.BASE_URL="https://plot.ly";Plotly.newPlot("10242921-de1a-499d-b524-0faf43b784ae", [{"y": [3.2640452560804443, 3.1986500089992607, 3.2464237758062513, 3.2633135261373676, 3.291343091266302, 3.3193952506108158, 3.3439316492132964, 3.3802161972006495, 3.3852725618387307, 3.417743421329492, 3.4321097308750423, 3.431385581877878, 3.4693666347597807, 3.4631478103767654, 3.465512038992406, 3.4900831162831554, 3.486206607959669, 3.496927070734422, 3.4753567761161164, 3.4977838091287077, 3.4804304610405, 3.4996661489403116, 3.494774683004721, 3.491431776513427, 3.412380026808228, 3.45502619549299, 3.405505498525316, 3.470016468389339, 3.4128978672610235, 3.3383590899150617, 3.4021663288087236, 3.3203693415412125, 3.347824110735063, 3.3107103179095456, 3.2898011887983647, 3.2348181962594453, 3.3482263215424553, 3.36671833721582, 3.2920738466249873, 3.329037151570281, 3.3027159997739175, 3.327292549627702, 3.2950928401213777, 3.269278154699114, 3.27146623022967, 3.319858552803384, 3.218001353139111, 3.342942671360679, 3.2344519081604552, 3.311386554053567, 3.2454361241134886, 3.266964158198452, 3.235776283685612, 3.158144450983343, 3.16125468431989, 3.041278722427568, 3.2406373166497136, 3.2465939531201093, 3.140603762716511, 3.1602809949116053, 3.1364818703304223, 2.948456258848584, 3.0953916369768177, 3.2571375353107266, 3.2897554088689014, 3.00691570581305, 3.2432255968892636, 3.0822058715578176, 3.1029491731724925, 3.154633556139847, 3.107474253446467, 3.5292398816299575, 3.120895416507997, 3.1763857732472487, 3.0117792991515087, 3.35394449681161, 3.0301337002713233, 2.6060510331470885, 3.381966019734268, 2.9041650800285006, 3.1918471524802814, 3.091042453358316, 2.5902671654458267, 2.70805020110221, 4.795790545596741, 2.3978952727983707, 2.797281334830153, 2.690350624002809, 2.803360380906535, 2.9444389791664403, 2.9779276489204842, 2.7814776696570274, 3.2733640101522705, 3.2865344733420154], "mode": "lines+markers", "name": "lines+markers", "type": "scatter", "x": [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 24, 25, 26, 27, 28, 29, 30, 31, 32, 33, 34, 35, 36, 37, 38, 39, 40, 41, 42, 43, 44, 45, 46, 47, 48, 49, 50, 51, 52, 53, 54, 55, 56, 57, 58, 59, 60, 61, 62, 63, 64, 65, 66, 67, 68, 69, 70, 71, 72, 73, 74, 75, 76, 77, 78, 79, 80, 81, 82, 83, 85, 89, 95, 96, 97, 98, 99, 100, 101, 102]}], {"title": "Average Log(Price) by Description Length", "xaxis": {"title": "Description Length"}, "yaxis": {"title": "Average Log(Price)"}}, {"showLink": true, "linkText": "Export to plot.ly"})});</script>
 </div>
 
 </div>
