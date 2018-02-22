@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html>
 <head><meta charset="utf-8" />
-<title>Untitled1</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
+<title>Untitled9</title><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.1.10/require.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
 <style type="text/css">
@@ -11776,7 +11776,19 @@ div#notebook {
 <div class="prompt input_prompt">In&nbsp;[1]:</div>
 <div class="inner_cell">
     <div class="input_area">
-<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">MPS_RidgeRegression</span>
+<div class=" highlight hl-ipython3"><pre><span></span><span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
+<span class="kn">from</span> <span class="nn">sklearn.model_selection</span> <span class="k">import</span> <span class="n">KFold</span>
+<span class="kn">from</span> <span class="nn">sklearn.linear_model</span> <span class="k">import</span> <span class="n">Ridge</span>
+<span class="kn">from</span> <span class="nn">sklearn.pipeline</span> <span class="k">import</span> <span class="n">FeatureUnion</span>
+<span class="kn">from</span> <span class="nn">sklearn.feature_extraction.text</span> <span class="k">import</span> <span class="n">CountVectorizer</span><span class="p">,</span> <span class="n">TfidfVectorizer</span>
+<span class="kn">from</span> <span class="nn">sklearn.metrics</span> <span class="k">import</span> <span class="n">mean_squared_log_error</span>
+
+<span class="k">def</span> <span class="nf">split_cat</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span> <span class="k">return</span> <span class="n">text</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="s2">&quot;/&quot;</span><span class="p">)</span>
+    <span class="k">except</span><span class="p">:</span> <span class="k">return</span> <span class="p">(</span><span class="s2">&quot;No Label&quot;</span><span class="p">,</span> <span class="s2">&quot;No Label&quot;</span><span class="p">,</span> <span class="s2">&quot;No Label&quot;</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Reading Training data from train.tsv file&#39;</span><span class="p">)</span>
 </pre></div>
 
 </div>
@@ -11795,35 +11807,447 @@ div#notebook {
 <div class="output_subarea output_stream output_stdout output_text">
 <pre>
  Reading Training data from train.tsv file
+</pre>
+</div>
+</div>
 
- ......................................
+</div>
+</div>
 
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[2]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">train</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s1">&#39;./inputCopy/train.tsv&#39;</span><span class="p">)</span>
+<span class="n">test</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">read_table</span><span class="p">(</span><span class="s1">&#39;./inputCopy/test.tsv&#39;</span><span class="p">)</span>
+
+<span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">concat</span><span class="p">([</span><span class="n">train</span><span class="p">,</span> <span class="n">test</span><span class="p">],</span> <span class="mi">0</span><span class="p">)</span>
+<span class="n">nrow_train</span> <span class="o">=</span> <span class="n">train</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Splitting Category name into general category, sub category 1 and 2&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  Splitting Category name into general category, sub category 1 and 2
+</pre>
+</div>
+</div>
 
- ......................................
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[3]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">],</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">]</span> <span class="o">=</span> \
+<span class="nb">zip</span><span class="p">(</span><span class="o">*</span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;category_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">apply</span><span class="p">(</span><span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">split_cat</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique categories.&quot;</span> <span class="o">%</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;general_cat&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique first sub-categories.&quot;</span> <span class="o">%</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;There are </span><span class="si">%d</span><span class="s2"> unique second sub-categories.&quot;</span> <span class="o">%</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">nunique</span><span class="p">())</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Applying log transformation on the price&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>There are 11 unique categories.
+There are 114 unique first sub-categories.
+There are 883 unique second sub-categories.
 
  Applying log transformation on the price
+</pre>
+</div>
+</div>
 
- ......................................
+</div>
+</div>
 
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[4]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">y_train</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">log1p</span><span class="p">(</span><span class="n">train</span><span class="p">[</span><span class="s1">&#39;price&#39;</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Filling empty values of brand_name with missing, item_description with None, converting shipping and item_condition_id to strings to handle them with a count vectorizer too.&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  Filling empty values of brand_name with missing, item_description with None, converting shipping and item_condition_id to strings to handle them with a count vectorizer too.
+</pre>
+</div>
+</div>
 
- ......................................
+</div>
+</div>
 
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[5]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">df</span><span class="p">[</span><span class="s1">&#39;brand_name&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;brand_name&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;missing&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;shipping&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;shipping&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;item_condition_id&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;item_condition_id&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">astype</span><span class="p">(</span><span class="nb">str</span><span class="p">)</span>
+<span class="n">df</span><span class="p">[</span><span class="s1">&#39;item_description&#39;</span><span class="p">]</span> <span class="o">=</span> <span class="n">df</span><span class="p">[</span><span class="s1">&#39;item_description&#39;</span><span class="p">]</span><span class="o">.</span><span class="n">fillna</span><span class="p">(</span><span class="s1">&#39;None&#39;</span><span class="p">)</span>
+<span class="c1"># we need a custom pre-processor to extract correct field,</span>
+<span class="c1"># but want to also use default scikit-learn preprocessing (e.g. lowercasing)</span>
+<span class="n">default_preprocessor</span> <span class="o">=</span> <span class="n">CountVectorizer</span><span class="p">()</span><span class="o">.</span><span class="n">build_preprocessor</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">build_preprocessor</span><span class="p">(</span><span class="n">field</span><span class="p">):</span>
+    <span class="n">field_idx</span> <span class="o">=</span> <span class="nb">list</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">columns</span><span class="p">)</span><span class="o">.</span><span class="n">index</span><span class="p">(</span><span class="n">field</span><span class="p">)</span>
+    <span class="k">return</span> <span class="k">lambda</span> <span class="n">x</span><span class="p">:</span> <span class="n">default_preprocessor</span><span class="p">(</span><span class="n">x</span><span class="p">[</span><span class="n">field_idx</span><span class="p">])</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> Using feature union to combine all the features from all the columns&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  Using feature union to combine all the features from all the columns
+</pre>
+</div>
+</div>
 
- ......................................
+</div>
+</div>
 
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[6]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">vectorizer</span> <span class="o">=</span> <span class="n">FeatureUnion</span><span class="p">([</span>
+    <span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+        <span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+        <span class="n">max_features</span><span class="o">=</span><span class="mi">50000</span><span class="p">,</span>
+        <span class="n">lowercase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;name&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;general_cat&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+        <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;.+&#39;</span><span class="p">,</span>
+        <span class="n">lowercase</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">max_features</span><span class="o">=</span><span class="mi">11</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;general_cat&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+            <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;.+&#39;</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="mi">112</span><span class="p">,</span>
+            <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;subcat_1&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+            <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;.+&#39;</span><span class="p">,</span>
+            <span class="n">max_features</span><span class="o">=</span><span class="mi">697</span><span class="p">,</span>
+            <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;subcat_2&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;brand_name&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+        <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;.+&#39;</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;brand_name&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;shipping&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+        <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;shipping&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;item_condition_id&#39;</span><span class="p">,</span> <span class="n">CountVectorizer</span><span class="p">(</span>
+        <span class="n">token_pattern</span><span class="o">=</span><span class="s1">&#39;\d+&#39;</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;item_condition_id&#39;</span><span class="p">))),</span>
+    <span class="p">(</span><span class="s1">&#39;item_description&#39;</span><span class="p">,</span> <span class="n">TfidfVectorizer</span><span class="p">(</span>
+        <span class="n">ngram_range</span><span class="o">=</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">),</span>
+        <span class="n">max_features</span><span class="o">=</span><span class="mi">100000</span><span class="p">,</span>
+        <span class="n">stop_words</span><span class="o">=</span><span class="s2">&quot;english&quot;</span><span class="p">,</span>
+        <span class="n">preprocessor</span><span class="o">=</span><span class="n">build_preprocessor</span><span class="p">(</span><span class="s1">&#39;item_description&#39;</span><span class="p">))),</span>
+<span class="p">])</span>
+<span class="n">X_train</span> <span class="o">=</span> <span class="n">vectorizer</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">df</span><span class="o">.</span><span class="n">values</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> (rows, feature size)&#39;</span><span class="p">,</span> <span class="n">X_train</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  (rows, feature size) (2175894, 156117)
+</pre>
+</div>
+</div>
 
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[7]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="k">def</span> <span class="nf">get_rmsle</span><span class="p">(</span><span class="n">y_true</span><span class="p">,</span> <span class="n">y_pred</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mean_squared_log_error</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">y_true</span><span class="p">),</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">y_pred</span><span class="p">)))</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;</span><span class="se">\n</span><span class="s1"> we have used k fold cross validator, to check how good our model is. We have 10 splits of data, so 9 parts will be used for building the model and 1 part for validation,this will be executed k times&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>
  we have used k fold cross validator, to check how good our model is. We have 10 splits of data, so 9 parts will be used for building the model and 1 part for validation,this will be executed k times
+</pre>
+</div>
+</div>
 
- ......................................
-Valid Root Mean Squared Logarithmic Error: 0.45547895531231253
-Using Ridge Regression model
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[8]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">cv</span> <span class="o">=</span> <span class="n">KFold</span><span class="p">(</span><span class="n">n_splits</span><span class="o">=</span><span class="mi">10</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">random_state</span><span class="o">=</span><span class="mi">42</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">train_ids</span><span class="p">,</span> <span class="n">valid_ids</span> <span class="ow">in</span> <span class="n">cv</span><span class="o">.</span><span class="n">split</span><span class="p">(</span><span class="n">X_train</span><span class="p">[:</span><span class="n">nrow_train</span><span class="p">]):</span>
+    <span class="c1">#model = linear_model.LinearRegression(copy_X=True, fit_intercept=True, n_jobs=1, normalize=False)</span>
+    <span class="n">model</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span>
+        <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+        <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">train_ids</span><span class="p">],</span> <span class="n">y_train</span><span class="p">[</span><span class="n">train_ids</span><span class="p">])</span>
+    <span class="n">y_pred_valid</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_train</span><span class="p">[</span><span class="n">valid_ids</span><span class="p">])</span>
+    <span class="n">rmsle</span> <span class="o">=</span> <span class="n">get_rmsle</span><span class="p">(</span><span class="n">y_pred_valid</span><span class="p">,</span> <span class="n">y_train</span><span class="p">[</span><span class="n">valid_ids</span><span class="p">])</span>
+    <span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Valid Root Mean Squared Logarithmic Error:&#39;</span><span class="p">,</span> <span class="n">rmsle</span><span class="p">)</span>
+    <span class="k">break</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Valid Root Mean Squared Logarithmic Error: 0.45505206855234553
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[9]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Using Ridge Regression model&quot;</span><span class="p">)</span>
+<span class="n">model</span> <span class="o">=</span> <span class="n">Ridge</span><span class="p">(</span>
+        <span class="n">solver</span><span class="o">=</span><span class="s1">&#39;auto&#39;</span><span class="p">,</span>
+        <span class="n">fit_intercept</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">alpha</span><span class="o">=</span><span class="mf">0.5</span><span class="p">,</span>
+        <span class="n">max_iter</span><span class="o">=</span><span class="mi">1000</span><span class="p">,</span>
+        <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="n">tol</span><span class="o">=</span><span class="mf">0.05</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Fitting Model&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Using Ridge Regression model
 Fitting Model
-Predicting Price
-Saving data in submission_mps_ridgeregression.csv file
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[10]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">model</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">X_train</span><span class="p">[:</span><span class="n">nrow_train</span><span class="p">],</span> <span class="n">y_train</span><span class="p">)</span>
+<span class="n">X_test</span> <span class="o">=</span> <span class="n">X_train</span><span class="p">[</span><span class="n">nrow_train</span><span class="p">:]</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Predicting Price&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Predicting Price
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[11]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">preds</span> <span class="o">=</span> <span class="n">model</span><span class="o">.</span><span class="n">predict</span><span class="p">(</span><span class="n">X_test</span><span class="p">)</span>
+<span class="n">test</span><span class="p">[</span><span class="s2">&quot;price&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">expm1</span><span class="p">(</span><span class="n">preds</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Saving data in submission_mps_ridgeregression.csv file&quot;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Saving data in submission_mps_ridgeregression.csv file
+</pre>
+</div>
+</div>
+
+</div>
+</div>
+
+</div>
+<div class="cell border-box-sizing code_cell rendered">
+<div class="input">
+<div class="prompt input_prompt">In&nbsp;[12]:</div>
+<div class="inner_cell">
+    <div class="input_area">
+<div class=" highlight hl-ipython3"><pre><span></span><span class="n">test</span><span class="p">[[</span><span class="s2">&quot;test_id&quot;</span><span class="p">,</span> <span class="s2">&quot;price&quot;</span><span class="p">]]</span><span class="o">.</span><span class="n">to_csv</span><span class="p">(</span><span class="s2">&quot;submission_mps_ridgeregression.csv&quot;</span><span class="p">,</span> <span class="n">index</span> <span class="o">=</span> <span class="kc">False</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="s1">&#39;Done predictig prices&#39;</span><span class="p">)</span>
+</pre></div>
+
+</div>
+</div>
+</div>
+
+<div class="output_wrapper">
+<div class="output">
+
+
+<div class="output_area">
+
+<div class="prompt"></div>
+
+
+<div class="output_subarea output_stream output_stdout output_text">
+<pre>Done predictig prices
 </pre>
 </div>
 </div>
