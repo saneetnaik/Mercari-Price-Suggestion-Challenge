@@ -1,11 +1,15 @@
 # Steps
-1.	Analysis the data
+1.	Analysed the data
 2.	Cleaned the data
 3.	Extracted the features
 4.	Identified ML model
 5.	Trained and validated the model 
 6.	Tuned the model and feature extraction
-7.	Used the model to predict the price for test.csv
+7.	Used the model to predict the price for test.tsv
+
+# Potential shortcomings
+
+# Possible improvements
 
 
 ## Data analysis/cleaning up the data
