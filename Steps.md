@@ -37,7 +37,6 @@ Brand name
 There are 4809 unique brand names in the training dataset.
 
 Item Description
-It will be more challenging to parse through this particular item since it's unstructured data. Does it mean a more detailed and lengthy description will result in a higher bidding price? We will strip out all punctuations, remove some english stop words (i.e. redundant words such as "a", "the", etc.) and any other words with a length less than 3:
-We also need to check if there are any missing values in the item description (4 observations don't have a description) andl remove those observations from our training set.
-If we look at the most common words by category, we could also see that, size, free and shipping is very commonly used by the sellers, probably with the intention to attract customers, which is contradictory to what we have shown previously that there is little correlation between the two variables price and shipping (or shipping fees do not account for a differentiation in prices). Brand names also played quite an important role - it's one of the most popular in all four categories.
+It will be more challenging to parse through this particular item since it's unstructured data.  We will strip out all punctuations, remove some english stop words (i.e. redundant words such as "a", "the", etc.) and any other words with a length less than 3:
+
 
