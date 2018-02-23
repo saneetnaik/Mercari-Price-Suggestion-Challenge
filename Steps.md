@@ -8,8 +8,13 @@
 7.	Predict the price for test.tsv data using the trained model
 
 # Potential shortcomings
+1. Feature extraction is not up to the mark.
+2. Compared only linear vs Ridge Regression. We could have considered more algorithms.
 
 # Possible improvements
+1. We could have done more word processing and cleaning up of data. This will be helpful for the feature extraction.
+2. We can try other algorithms like RNN(Recurrent neural networks)
+3. We could use domain specific stopwords rather than just english stopwords.
 
 
 ## Data analysis/cleaning up the data
