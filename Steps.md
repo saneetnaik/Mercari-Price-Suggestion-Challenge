@@ -5,7 +5,7 @@
 4.	Identified ML model
 5.	Trained and validated the model 
 6.	Tuned the model and feature extraction
-7.	Used the model to predict the price for test.tsv
+7.	Predict the price for test.tsv data using the trained model
 
 # Potential shortcomings
 
